@@ -5,55 +5,44 @@ import android.os.Bundle
 import android.os.PersistableBundle
 import com.example.thirdquarter.databinding.ActivityMainBinding
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), MainView {
 
     private lateinit var binding: ActivityMainBinding
 
-    private val counters = mutableListOf(0, 0, 0)
+    private lateinit var presenter: CountersPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        initViews()
+        initPresenter()
 
         with(binding) {
             btnNumberOne.setOnClickListener {
-                tvTextOne.text = (++counters[0]).toString()
+                presenter.onCounterClick(R.id.btnNumberOne)
             }
             btnNumberTwo.setOnClickListener {
-                tvTextTwo.text = (++counters[0]).toString()
+                presenter.onCounterClick(R.id.btnNumberTwo)
             }
             btnNumberThree.setOnClickListener {
-                tvTextThree.text = (++counters[0]).toString()
+                presenter.onCounterClick(R.id.btnNumberThree)
             }
         }
     }
 
-    private fun initViews() {
-        with(binding) {
-            tvTextOne.text = counters[0].toString()
-            tvTextTwo.text = counters[1].toString()
-            tvTextThree.text = counters[2].toString()
-
-        }
+    private fun initPresenter() {
+        presenter = CountersPresenter(this)
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putIntArray("counters", counters.toIntArray())
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        val array = savedInstanceState.getIntArray("counters")
-        counters.let { list ->
-            list.clear()
-            array?.toList()?.let {
-                list.addAll(it)
+    override fun setText(counter: String, position: Int) {
+        with(binding){
+            when(position){
+                0 -> tvTextOne.text = counter
+                1 -> tvTextTwo.text = counter
+                2 -> tvTextThree.text = counter
             }
         }
-        initViews()
+
     }
 }
